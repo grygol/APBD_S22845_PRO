@@ -1,0 +1,25 @@
+﻿@page "/dashboard2"
+
+@using Syncfusion.Blazor.DropDowns
+@using APBD_PRO.Shared 
+
+@*<SfAutoComplete TValue="string" TItem="GameFields" Placeholder="e.g. Basketball" DataSource="@Games">
+    <AutoCompleteFieldSettings Value="Text" />
+</SfAutoComplete>*@
+
+
+<SfAutoComplete TValue="string" TItem="BasicTicker" Placeholder="Enter ticker name...">
+    <Syncfusion.Blazor.Data.SfDataManager Url="api/Polygon/GetBasicTickers" Adaptor="Adaptors.WebApiAdaptor" CrossDomain="false">
+    </Syncfusion.Blazor.Data.SfDataManager>
+    <AutoCompleteFieldSettings Value="ticker" />
+    <AutoCompleteEvents TItem="BasicTicker" TValue="string"  OnValueSelect="@OnValueSelectHandler"></AutoCompleteEvents>
+</SfAutoComplete>
+
+@code{
+
+    private void OnValueSelectHandler(SelectEventArgs<BasicTicker> args)
+    {
+        var ticker = args.ItemData.ticker;
+        Console.WriteLine("Selected ticker: " + ticker);
+    }
+}

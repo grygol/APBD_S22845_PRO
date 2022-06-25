@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using APBD_PRO.Client;
+using Syncfusion.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -14,6 +15,9 @@ builder.Services.AddHttpClient("APBD_PRO.ServerAPI", client => client.BaseAddres
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("APBD_PRO.ServerAPI"));
 
 builder.Services.AddApiAuthorization();
+
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NjYxOTc2QDMyMzAyZTMxMmUzMGFuTk4wcUZYTXdzUld4SVdmM091TlhvbHR5ZFNjN0dZejh2UXhTZFR2UlE9");
+builder.Services.AddSyncfusionBlazor();
 
 await builder.Build().RunAsync();
 

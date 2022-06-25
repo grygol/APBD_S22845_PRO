@@ -3,16 +3,23 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using APBD_PRO.Server.Data;
 using APBD_PRO.Server.Models;
+using Microsoft.Net.Http.Headers;
+using Microsoft.Extensions.Configuration;
+using APBD_PRO.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var polygonAccessToken = builder.Configuration.GetValue<string>("AccessTokens:Polygon.io");
+
+builder.Services.AddScoped<IPolygonService, PolygonService>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
@@ -23,6 +30,15 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddHttpClient("Polygon.io", HttpClient =>
+{
+    HttpClient.BaseAddress = new Uri("https://api.polygon.io/");
+
+    HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue($"Bearer", $"{polygonAccessToken}");
+
+    //HttpClient.DefaultRequestHeaders.Add("");
+});
 
 var app = builder.Build();
 

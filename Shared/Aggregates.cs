@@ -1,5 +1,5 @@
 ﻿using System;
-namespace APBD_PRO.Server.Models
+namespace APBD_PRO.Shared
 {
 	public class Aggregates
 	{

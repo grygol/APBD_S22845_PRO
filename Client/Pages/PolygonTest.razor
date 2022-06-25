@@ -1,0 +1,41 @@
+﻿@page "/polygonTest"
+@using APBD_PRO.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject HttpClient http
+
+<PageTitle>Polygon.io test</PageTitle>
+
+<h3>Component1</h3>
+
+@if (aggregates == null)
+{
+    <p><em>Loading... (ERROR)</em></p>
+    }
+    else
+    {
+        @foreach(var r in aggregates.results)
+        @r
+    }
+
+@code {
+    private Aggregates aggregates;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            aggregates = await http.GetFromJsonAsync<Aggregates>("WeatherForecast");
+        }
+        catch (AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
+        }
+
+    }
+
+
+
+}
+
