@@ -36,12 +36,31 @@ namespace APBD_PRO.Server.Controllers
         public async Task<IEnumerable<BasicTicker>> GetBasicTickers()
         {
             string filterParam = HttpContext.Request.Query["$filter"].ToString();
-            string filter = filterParam.Substring(filterParam.IndexOf("'")+1, filterParam.LastIndexOf("'") - filterParam.IndexOf("'")-1);
+            string filter = filterParam.Substring(filterParam.IndexOf("'") + 1, filterParam.LastIndexOf("'") - filterParam.IndexOf("'") - 1);
 
             Console.WriteLine("FILTER: " + filter);
 
             return await _service.GetBasicTickers(filter);
         }
+
+        [Route("[action]/{ticker}")]
+        [HttpGet]
+        public async Task<FullTicker> GetFullTicker(string ticker)
+        {
+            return await _service.GetFullTicker(ticker);
+        }
+
+        [Route("[action]/{ticker}")]
+        [HttpGet]
+        public async Task<IQueryable<ChartData>> GetChartData(string ticker)
+        {
+            string past3M = DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd");
+            string now = DateTime.Now.ToString("yyyy-MM-dd");
+
+            var res = await  _service.GetChartData(ticker, past3M, now);
+            return res.AsQueryable();
+        }
+
 
         //// GET api/values/5
         //[HttpGet("{id}")]

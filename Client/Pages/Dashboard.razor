@@ -2,6 +2,7 @@
 
 @using Syncfusion.Blazor.DropDowns
 @using APBD_PRO.Shared
+@inject NavigationManager NavigationManager
 
 @*<SfAutoComplete TValue="string" TItem="GameFields" Placeholder="e.g. Basketball" DataSource="@Games">
         <AutoCompleteFieldSettings Value="Text" />
@@ -21,5 +22,6 @@
     {
         var ticker = args.ItemData.ticker;
         Console.WriteLine("Selected ticker: " + ticker);
+        NavigationManager.NavigateTo("tickerview/" + ticker);
     }
 }

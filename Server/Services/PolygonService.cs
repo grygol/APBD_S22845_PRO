@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text.Json;
+using APBD_PRO.Server.Models;
 using APBD_PRO.Shared;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace APBD_PRO.Server.Services
 {
@@ -67,5 +69,51 @@ namespace APBD_PRO.Server.Services
             }
             return null;
         }
+
+        
+        public async Task<FullTicker> GetFullTicker(string ticker)
+        {
+            var httpResponse = await _httpClient.GetAsync($"v3/reference/tickers/{ticker}");
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+
+                var res = await System.Text.Json.JsonSerializer.DeserializeAsync<TickerDetailsResponse>(contentStream);
+
+                return res.results;
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<ChartData>> GetChartData(string ticker, string from, string to)
+        {
+            var httpResponse = await _httpClient.GetAsync($"v2/aggs/ticker/{ticker}/range/1/day/{from}/{to}");
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+                string jsonText = await new StreamReader(contentStream).ReadToEndAsync();
+
+                var o = JObject.Parse(jsonText).SelectToken("results");
+
+                //Console.WriteLine("O: " + o.ToString());
+
+                return o.Select(e => new ChartData
+                {
+                    Volume = e["v"].ToObject<Double>(),
+                    Open = e["o"].ToObject<Double>(),
+                    Close = e["c"].ToObject<Double>(),
+                    High = e["h"].ToObject<Double>(),
+                    Low = e["l"].ToObject<Double>(),
+                    Date = (new DateTime(1970, 1, 1)).AddMilliseconds(e["t"].ToObject<double>())
+                }).ToList();
+            }
+
+            return null;
+        }
+
+
+
     }
 }

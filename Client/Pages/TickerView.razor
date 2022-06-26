@@ -1,0 +1,171 @@
+﻿@page "/tickerview/{ticker}"
+@using Microsoft.AspNetCore.Authorization
+@using APBD_PRO.Shared
+@using Syncfusion.Blazor.Charts
+@using Syncfusion.Blazor.Data
+@attribute [Authorize]
+@inject HttpClient Http
+@*<h3>@fullTicker.name (@ticker)</h3>*@
+
+@if (fullTicker == null)
+{
+    <div class="stockchartloader">
+    </div>
+}
+else
+{
+    <h1>@fullTicker.name</h1>
+    <h3 style="color:darkgray">@fullTicker.ticker</h3>
+}
+
+
+<SfTab>
+    <TabAnimationSettings>
+        <TabAnimationNext Effect="AnimationEffect.None"></TabAnimationNext>
+        <TabAnimationPrevious Effect="AnimationEffect.None"></TabAnimationPrevious>
+    </TabAnimationSettings>
+
+    <TabItems>
+
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Overview"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                @if (fullTicker == null)
+                {
+                    <div class="stockchartloader">
+                    </div>
+                }
+                else
+                {
+                    <h1>@fullTicker.name</h1>
+                    <img src="@fullTicker.branding["icon_url"]" />
+                }
+            </ContentTemplate>
+        </TabItem>
+
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Chart"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+
+                @if (DataSource == null)
+                {
+                    <div class="stockchartloader">
+                    </div>
+                }
+                else
+                {
+
+                    <div class="@loadClass"></div>
+                    <div class="@loadDiv">
+
+                        <SfStockChart Title="@fullTicker.name">
+                            <StockChartCrosshairSettings Enable="true"></StockChartCrosshairSettings>
+
+                            <StockChartPeriods>
+                                <StockChartPeriod IntervalType="RangeIntervalType.Days" Interval="1" Text="1D"></StockChartPeriod>
+                                <StockChartPeriod IntervalType="RangeIntervalType.Weeks" Interval="1" Text="1W" Selected="true"></StockChartPeriod>
+                                <StockChartPeriod IntervalType="RangeIntervalType.Months" Interval="1" Text="1M"></StockChartPeriod>
+                                <StockChartPeriod IntervalType="RangeIntervalType.Months" Interval="3" Text="3M"></StockChartPeriod>
+                            </StockChartPeriods>
+
+                            <StockChartEvents OnLoaded="@ChartLoaded"></StockChartEvents>
+
+                            <StockChartPrimaryXAxis>
+                                <StockChartAxisMajorGridLines Width="0"></StockChartAxisMajorGridLines>
+                                <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
+                            </StockChartPrimaryXAxis>
+
+                            <StockChartPrimaryYAxis>
+                                <StockChartAxisLineStyle Width="0"></StockChartAxisLineStyle>
+                                <StockChartAxisMajorTickLines Width="0"></StockChartAxisMajorTickLines>
+                            </StockChartPrimaryYAxis>
+
+                            <StockChartTooltipSettings Enable="true"></StockChartTooltipSettings>
+
+                            <StockChartCrosshairSettings Enable="true"></StockChartCrosshairSettings>
+
+                            <StockChartSeriesCollection>
+                                <StockChartSeries DataSource="@DataSource" Type="ChartSeriesType.HiloOpenClose" XName="date"></StockChartSeries>
+                            </StockChartSeriesCollection>
+
+                            <StockChartChartArea>
+                                <StockChartChartAreaBorder Width="0"></StockChartChartAreaBorder>
+                            </StockChartChartArea>
+
+                        </SfStockChart>
+                    </div>
+                }
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+<style>
+    .stockchartloader {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #7a0fff;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 46%;
+        left: 46%;
+        border-radius: 50%;
+        -webkit-animation: loader 2s linear infinite;
+        animation: loader 2s linear infinite;
+    }
+
+    .stockchartdiv {
+        visibility: hidden;
+    }
+
+    .e-tab .e-tab-header:not(.e-vertical) .e-indicator, .e-tab .e-tab-header.e-vertical .e-indicator {
+        transition: none;
+    }
+</style>
+
+
+@code {
+    [Parameter]
+    public string? ticker { get; set; }
+
+    public FullTicker? fullTicker { get; set; }
+    @*public List<ChartData>? StockDetails { get; set; }*@
+    private ChartData[] DataSource;
+
+    protected override async Task OnInitializedAsync()
+    {
+        fullTicker = await Http.GetFromJsonAsync<FullTicker>($"api/Polygon/GetFullTicker/{ticker}");
+
+        DataSource = await Http.GetFromJsonAsync<ChartData[]>($"api/Polygon/GetChartData/{ticker}");
+
+        @*StockDetails = await Http.GetFromJsonAsync<List<ChartData>>("api/Polygon/GetChartData");*@
+
+        @*Console.WriteLine("AAA: " + StockDetails.Select(e => e.Date).FirstOrDefault());*@
+    }
+
+    public class ChartData
+    {
+        public DateTime date { get; set; }
+        public double open { get; set; }
+        public double low { get; set; }
+        public double close { get; set; }
+        public double high { get; set; }
+        public double volume { get; set; }
+    }
+
+    string loadClass = "stockchartloader";
+    string loadDiv = "stockchartdiv";
+    void ChartLoaded(StockChartEventArgs args)
+    {
+        loadClass = "";
+        loadDiv = "";
+        StateHasChanged();
+    }
+
+
+}
+
