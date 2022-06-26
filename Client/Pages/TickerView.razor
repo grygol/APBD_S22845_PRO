@@ -16,6 +16,7 @@ else
 {
     <h1>@fullTicker.name</h1>
     <h3 style="color:darkgray">@fullTicker.ticker</h3>
+    <SfButton IsPrimary="true" IconCss="@watchListButtonCss" Content="@watchListButtonContent" @onclick="watchListButtonClick"></SfButton>
 }
 
 
@@ -39,8 +40,41 @@ else
                 }
                 else
                 {
-                    <h1>@fullTicker.name</h1>
-                    <img src="@fullTicker.branding["icon_url"]" />
+                    <br />
+                    <SfDashboardLayout Columns="4" CellSpacing="@(new double[]{20 ,20 })" MediaQuery="max-height:300px" CellAspectRatio="2">
+                        <DashboardLayoutPanels>
+                            <DashboardLayoutPanel Column="0" SizeX="2" SizeY="2" MaxSizeY="2">
+                                <HeaderTemplate><div>Company description</div></HeaderTemplate>
+                                <ContentTemplate><div class="text-left"><p class="lead">@fullTicker.description</p></div></ContentTemplate>
+                            </DashboardLayoutPanel>
+                            <DashboardLayoutPanel SizeX="1" Column="3" Row="1" MaxSizeY="1">
+                                <HeaderTemplate><div>Localization</div></HeaderTemplate>
+                                <ContentTemplate><div><p class="lead">@fullTicker.address["address1"], @fullTicker.address["city"]</p></div></ContentTemplate>
+                            </DashboardLayoutPanel>
+                            <DashboardLayoutPanel SizeX="1" Column="2" Row="0" MaxSizeY="1">
+                                <HeaderTemplate><div>Primary exchange</div></HeaderTemplate>
+                                <ContentTemplate><div><h1>@fullTicker.primary_exchange</h1></div></ContentTemplate>
+                            </DashboardLayoutPanel>
+                            <DashboardLayoutPanel SizeX="1" Column="3" Row="0" MaxSizeY="1">
+                                <HeaderTemplate><div>Total employees</div></HeaderTemplate>
+                                <ContentTemplate><div><h1>@fullTicker.total_employees</h1></div></ContentTemplate>
+                            </DashboardLayoutPanel>
+                            <DashboardLayoutPanel SizeX="1" Column="2" Row="1" MaxSizeY="1">
+                                <HeaderTemplate><div>Contact details</div></HeaderTemplate>
+                                <ContentTemplate>
+                                    <div>
+                                        <p class="lead">
+                                            <a href="@fullTicker.homepage_url">@fullTicker.homepage_url</a>
+                                            <br />
+                                            @fullTicker.phone_number
+                                        </p>
+                                    </div>
+                                </ContentTemplate>
+                            </DashboardLayoutPanel>
+
+                        </DashboardLayoutPanels>
+                    </SfDashboardLayout>
+
                 }
             </ContentTemplate>
         </TabItem>
@@ -101,6 +135,43 @@ else
                 }
             </ContentTemplate>
         </TabItem>
+
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="News"></TabHeader>
+            </ChildContent>
+
+            <ContentTemplate>
+
+                @if (TickerNews == null)
+                {
+                    <div class="stockchartloader">
+                    </div>
+                }
+                else
+                {
+                    @foreach (TickerNews n in TickerNews)
+                    {
+                        <SfCard>
+                            <CardHeader Title="@n.title" SubTitle="@n.author" ImageUrl="@n.image_url" />
+                            <CardContent Content="@n.description" />
+                            <CardFooter>
+                                <CardFooterContent>
+                                    <a href="@n.article_url" class="btn">
+                                        <SfButton CssClass="e-btn e-primary">Read More</SfButton>
+                                    </a>
+                                </CardFooterContent>
+                            </CardFooter>
+                        </SfCard>
+                    }
+                }
+
+
+            </ContentTemplate>
+
+        </TabItem>
+
+
     </TabItems>
 </SfTab>
 
@@ -125,6 +196,20 @@ else
     .e-tab .e-tab-header:not(.e-vertical) .e-indicator, .e-tab .e-tab-header.e-vertical .e-indicator {
         transition: none;
     }
+
+    .e-panel-content {
+        padding: 10px;
+        overflow: auto;
+    }
+
+    .e-card {
+        padding-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    .e-btn a.btn{
+        border: none;
+    }
 </style>
 
 
@@ -135,12 +220,23 @@ else
     public FullTicker? fullTicker { get; set; }
     @*public List<ChartData>? StockDetails { get; set; }*@
     private ChartData[] DataSource;
+    public TickerNews[]? TickerNews { get; set; }
+
+    private string watchListButtonCss = "";
+    private string watchListButtonContent = "";
+
+    private void watchListButtonClick()
+        {
+
+        }
 
     protected override async Task OnInitializedAsync()
     {
         fullTicker = await Http.GetFromJsonAsync<FullTicker>($"api/Polygon/GetFullTicker/{ticker}");
 
         DataSource = await Http.GetFromJsonAsync<ChartData[]>($"api/Polygon/GetChartData/{ticker}");
+
+        TickerNews = await Http.GetFromJsonAsync<TickerNews[]>($"api/Polygon/GetNews/{ticker}");
 
         @*StockDetails = await Http.GetFromJsonAsync<List<ChartData>>("api/Polygon/GetChartData");*@
 

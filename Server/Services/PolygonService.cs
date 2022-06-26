@@ -113,7 +113,31 @@ namespace APBD_PRO.Server.Services
             return null;
         }
 
+        public async Task<IEnumerable<TickerNews>> GetTickerNews(string ticker)
+        {
+            var httpResponse = await _httpClient.GetAsync($"v2/reference/news?ticker={ticker}");
 
+            if (httpResponse.IsSuccessStatusCode)
+            {
 
+                using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+                string jsonText = await new StreamReader(contentStream).ReadToEndAsync();
+
+                var o = JObject.Parse(jsonText).SelectToken("results");
+
+                //Console.WriteLine("O: " + o.ToString());
+                return o.Select(e => new TickerNews
+                {
+                    title = e["title"].ToObject<String>(),
+                    author = e["author"].ToObject<String>(),
+                    article_url = e["article_url"].ToObject<String>(),
+                    image_url = e["image_url"].ToObject<String>(),
+                    description = e["description"].ToObject<String>()
+                }).ToList();
+                
+            }
+
+            return null;
+        }
     }
 }

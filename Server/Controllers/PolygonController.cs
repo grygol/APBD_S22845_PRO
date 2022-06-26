@@ -61,6 +61,16 @@ namespace APBD_PRO.Server.Controllers
             return res.AsQueryable();
         }
 
+        [Route("[action]/{ticker}")]
+        [HttpGet]
+        public async Task<IQueryable<TickerNews>> GetNews(string ticker)
+        {
+            var res = await _service.GetTickerNews(ticker);
+            return res.AsQueryable();
+        }
+
+
+
 
         //// GET api/values/5
         //[HttpGet("{id}")]
