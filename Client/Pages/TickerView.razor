@@ -73,7 +73,7 @@ else
                                 </ContentTemplate>
                             </DashboardLayoutPanel>
 
-                            <DashboardLayoutPanel SizeX="1" Column="3" Row="2" MaxSizeY="1">
+                            <DashboardLayoutPanel SizeX="1" Column="3" Row="2" MaxSizeY="1" Enabled="@(imgSrc!=null)">
                                 <HeaderTemplate><div>Logo</div></HeaderTemplate>
                                 <ContentTemplate><img class="logo_img" src="@imgSrc" height="100%"/></ContentTemplate>
                             </DashboardLayoutPanel>
@@ -231,7 +231,7 @@ else
     private ChartData[] DataSource;
     public TickerNews[]? TickerNews { get; set; }
     private bool isOnWatchList { get; set; }
-    
+
     private String imgSrc = "";
 
     private string watchListButtonCss = "";
@@ -254,7 +254,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        
+
         try
         {
             fullTicker = await Http.GetFromJsonAsync<FullTicker>($"api/Polygon/GetFullTicker/{ticker}");
@@ -286,7 +286,10 @@ else
 
         isOnWatchList = (await Http.GetFromJsonAsync<BasicTicker[]>("api/Watchlists")).Where(e => e.ticker == ticker).Count()>0 ? true : false;
 
-        imgSrc = await Http.GetStringAsync($"api/Polygon/GetResource?url={fullTicker.branding["icon_url"]}");
+        if (fullTicker.branding.ContainsKey("icon_url"))
+        {
+            imgSrc = await Http.GetStringAsync($"api/Polygon/GetResource?url={fullTicker.branding["icon_url"]}");
+        }
 
         watchListButtonChange();
 
