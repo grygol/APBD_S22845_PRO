@@ -12,6 +12,7 @@ namespace APBD_PRO.Server.Services
 		public Task<FullTicker> GetFullTicker(string ticker);
 		public Task<IEnumerable<ChartData>> GetChartData(string ticker, string from, string to);
 		public Task<IEnumerable<TickerNews>> GetTickerNews(string ticker);
+		public Task<String> GetResource(string url);
 	}
 }
 

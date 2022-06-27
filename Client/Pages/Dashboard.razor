@@ -3,20 +3,77 @@
 @using Syncfusion.Blazor.DropDowns
 @using APBD_PRO.Shared
 @inject NavigationManager NavigationManager
-
+@inject HttpClient Http
 @*<SfAutoComplete TValue="string" TItem="GameFields" Placeholder="e.g. Basketball" DataSource="@Games">
         <AutoCompleteFieldSettings Value="Text" />
     </SfAutoComplete>*@
 
 
-<SfAutoComplete TValue="string" TItem="BasicTicker" Placeholder="Enter ticker name...">
+<SfAutoComplete TValue="string" TItem="BasicTicker" Placeholder="Search ticker...">
     <Syncfusion.Blazor.Data.SfDataManager Url="api/Polygon/GetBasicTickers" Adaptor="Adaptors.WebApiAdaptor" CrossDomain="false">
     </Syncfusion.Blazor.Data.SfDataManager>
     <AutoCompleteFieldSettings Value="ticker" />
     <AutoCompleteEvents TItem="BasicTicker" TValue="string" OnValueSelect="@OnValueSelectHandler"></AutoCompleteEvents>
 </SfAutoComplete>
 
+<br/>
+
+@if (basicTickers == null)
+{
+    <div class="stockchartloader">
+    </div>
+}
+else
+{
+    <h1>Watchlist</h1>
+    <SfDashboardLayout Columns="6" CellSpacing="@(new double[]{20 ,20 })" MediaQuery="max-height:300px" CellAspectRatio="2">
+        <DashboardLayoutPanels>
+
+            @if (basicTickers.Count() == 0)
+            {
+                <h6>No tickers on watchlist</h6>
+            }
+            else
+            {
+                @foreach (BasicTicker b in basicTickers)
+                {
+                    <DashboardLayoutPanel Column="0" SizeX="1" SizeY="1" MaxSizeY="1">
+                        <ContentTemplate>
+                        <div class="text-left"><h1> <a href="/TickerView/@b.ticker" class="tickerlink">@b.ticker</a></h1> <h6>@b.name</h6></div>
+                        </ContentTemplate>
+                    </DashboardLayoutPanel>
+                }
+            }
+
+
+
+        </DashboardLayoutPanels>
+    </SfDashboardLayout>
+
+
+}
+
+<style>
+    a.tickerlink{
+        color: black;
+
+    }
+
+    .e-panel-content {
+        padding: 10px;
+        overflow: auto;
+    }
+</style>
+
+
+
 @code{
+    private BasicTicker[] basicTickers;
+
+    protected async override Task OnInitializedAsync()
+    {
+        basicTickers = await Http.GetFromJsonAsync<BasicTicker[]>("api/Watchlists");
+    }
 
     private void OnValueSelectHandler(SelectEventArgs<BasicTicker> args)
     {

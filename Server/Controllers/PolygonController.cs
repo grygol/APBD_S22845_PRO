@@ -73,6 +73,17 @@ namespace APBD_PRO.Server.Controllers
             else return await _tickerService.GetFullTicker(ticker);
         }
 
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<String> GetResource()
+        {
+
+            string filterParam = HttpContext.Request.Query["url"].ToString();
+            Console.WriteLine(filterParam);
+            return await _polygonService.GetResource(filterParam);
+        }
+
+
         [Route("[action]/{ticker}")]
         [HttpGet]
         public async Task<IQueryable<ChartData>> GetChartData(string ticker)

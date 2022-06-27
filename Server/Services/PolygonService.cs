@@ -130,5 +130,21 @@ namespace APBD_PRO.Server.Services
 
             return null;
         }
+
+        public async Task<String> GetResource(string url)
+        {
+            var httpResponse = await _httpClient.GetAsync(url);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+
+                byte[]? contentStream = await httpResponse.Content.ReadAsByteArrayAsync();
+                return "data:image/jpg;base64," + Convert.ToBase64String(contentStream, 0, contentStream.Length);
+
+                //string jsonText = await new StreamReader(contentStream).ReadToEndAsync();
+            }
+            return "";
+
+        }
     }
 }

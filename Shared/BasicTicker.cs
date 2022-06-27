@@ -7,7 +7,6 @@ namespace APBD_PRO.Shared
         public string name { get; set; }
         public string? primary_exchange { get; set; }
 
-
     }
 }
 

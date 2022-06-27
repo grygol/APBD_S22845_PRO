@@ -2,9 +2,37 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Ticker overview service</h1>
 
-Welcome to your new app.
+<AuthorizeView>
+    <NotAuthorized>
+        Please <a href="/authentication/login" class="dashBtn">Log in</a> or <a href="/authentication/register" class="dashBtn">Register</a>.
+    </NotAuthorized>
+    <Authorized>
+        Go to <a href="/dashboard" class="dashBtn">Dashboard</a>
+    </Authorized>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+</AuthorizeView>
 
+<style>
+    a.dashBtn {
+        border-radius: 4px;
+        padding: 4px;
+        padding-left: 6px;
+        padding-right: 6px;
+        color: white;
+        border-width: 0px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+        background-color: #66BB6A;
+        transition: background-color .2s;
+    }
+
+        a.dashBtn:hover {
+            background-color: #4CAF50;
+        }
+
+        a.dashBtn:active {
+            background-color: #81C784;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .6);
+        }
+</style>
