@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APBD_PRO.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220624093410_Initial MSSQL")]
-    partial class InitialMSSQL
+    [Migration("20220626214007_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -87,6 +87,195 @@ namespace APBD_PRO.Server.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.ChartDataDb", b =>
+                {
+                    b.Property<int>("chart_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("chart_id"), 1L, 1);
+
+                    b.Property<double>("close")
+                        .HasMaxLength(10)
+                        .HasPrecision(2)
+                        .HasColumnType("float(2)");
+
+                    b.Property<DateTime>("date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("high")
+                        .HasMaxLength(10)
+                        .HasPrecision(2)
+                        .HasColumnType("float(2)");
+
+                    b.Property<double>("low")
+                        .HasMaxLength(10)
+                        .HasPrecision(2)
+                        .HasColumnType("float(2)");
+
+                    b.Property<double>("open")
+                        .HasMaxLength(10)
+                        .HasPrecision(2)
+                        .HasColumnType("float(2)");
+
+                    b.Property<string>("ticker")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("volume")
+                        .HasMaxLength(10)
+                        .HasPrecision(2)
+                        .HasColumnType("float(2)");
+
+                    b.HasKey("chart_id");
+
+                    b.HasIndex("ticker");
+
+                    b.ToTable("ChartData", (string)null);
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.FullTickerDb", b =>
+                {
+                    b.Property<string>("ticker")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("address1")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("city")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("homepage_url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("icon_url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("list_date")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("locale")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("logo_url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("phone_number")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("postal_code")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("primary_exchange")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("state")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("total_employees")
+                        .HasColumnType("int");
+
+                    b.HasKey("ticker");
+
+                    b.ToTable("FullTicker", (string)null);
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.TickerInNewsDb", b =>
+                {
+                    b.Property<string>("news_Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ticker")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("news_Id", "ticker");
+
+                    b.HasIndex("ticker");
+
+                    b.ToTable("TickerInNews", (string)null);
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.TickerNewsDb", b =>
+                {
+                    b.Property<string>("news_id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("article_url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("author")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("image_url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("news_id");
+
+                    b.ToTable("TickerNews", (string)null);
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.WatchlistDb", b =>
+                {
+                    b.Property<string>("user_id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ticker")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("user_id", "ticker");
+
+                    b.HasIndex("ticker");
+
+                    b.ToTable("Watchlist", (string)null);
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -367,6 +556,55 @@ namespace APBD_PRO.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("APBD_PRO.Server.Models.ChartDataDb", b =>
+                {
+                    b.HasOne("APBD_PRO.Server.Models.FullTickerDb", "fullTicker")
+                        .WithMany("chartDatas")
+                        .HasForeignKey("ticker")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("fullTicker");
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.TickerInNewsDb", b =>
+                {
+                    b.HasOne("APBD_PRO.Server.Models.TickerNewsDb", "tickerNews")
+                        .WithMany("tickerInNews")
+                        .HasForeignKey("news_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APBD_PRO.Server.Models.FullTickerDb", "fullTicker")
+                        .WithMany("tickerInNews")
+                        .HasForeignKey("ticker")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("fullTicker");
+
+                    b.Navigation("tickerNews");
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.WatchlistDb", b =>
+                {
+                    b.HasOne("APBD_PRO.Server.Models.FullTickerDb", "fullTicker")
+                        .WithMany("Watchlists")
+                        .HasForeignKey("ticker")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APBD_PRO.Server.Models.ApplicationUser", "applicationUser")
+                        .WithMany("watchlists")
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("applicationUser");
+
+                    b.Navigation("fullTicker");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -416,6 +654,25 @@ namespace APBD_PRO.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("watchlists");
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.FullTickerDb", b =>
+                {
+                    b.Navigation("Watchlists");
+
+                    b.Navigation("chartDatas");
+
+                    b.Navigation("tickerInNews");
+                });
+
+            modelBuilder.Entity("APBD_PRO.Server.Models.TickerNewsDb", b =>
+                {
+                    b.Navigation("tickerInNews");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using APBD_PRO.Shared
 @using Syncfusion.Blazor.Charts
-@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Data 
 @attribute [Authorize]
 @inject HttpClient Http
 @*<h3>@fullTicker.name (@ticker)</h3>*@
@@ -221,22 +221,60 @@ else
     @*public List<ChartData>? StockDetails { get; set; }*@
     private ChartData[] DataSource;
     public TickerNews[]? TickerNews { get; set; }
+    private bool isOnWatchList { get; set; }
 
     private string watchListButtonCss = "";
     private string watchListButtonContent = "";
 
-    private void watchListButtonClick()
+    private async void watchListButtonClick()
+    {
+        if (isOnWatchList)
         {
-
+            await Http.DeleteAsync($"api/Watchlists/{ticker}");
+            isOnWatchList = false;
+            watchListButtonChange();
+        } else
+        {
+            await Http.PostAsync($"api/Watchlists/{ticker}", null);
+            isOnWatchList = true;
+            watchListButtonChange();
         }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        fullTicker = await Http.GetFromJsonAsync<FullTicker>($"api/Polygon/GetFullTicker/{ticker}");
+        try
+        {
+            fullTicker = await Http.GetFromJsonAsync<FullTicker>($"api/Polygon/GetFullTicker/{ticker}");
+        }
+        catch (Exception)
+        {
+            fullTicker = new FullTicker();
+        }
 
-        DataSource = await Http.GetFromJsonAsync<ChartData[]>($"api/Polygon/GetChartData/{ticker}");
+        try
+        {
 
-        TickerNews = await Http.GetFromJsonAsync<TickerNews[]>($"api/Polygon/GetNews/{ticker}");
+            DataSource = await Http.GetFromJsonAsync<ChartData[]>($"api/Polygon/GetChartData/{ticker}");
+        }
+        catch (Exception)
+        {
+            DataSource = new List<ChartData>().ToArray();
+        }
+
+        try
+        {
+            TickerNews = await Http.GetFromJsonAsync<TickerNews[]>($"api/Polygon/GetNews/{ticker}");
+
+        }
+        catch (Exception)
+        {
+            TickerNews = new List<TickerNews>().ToArray();
+        }
+
+        isOnWatchList = (await Http.GetFromJsonAsync<BasicTicker[]>("api/Watchlists")).Where(e => e.ticker == ticker).Count()>0 ? true : false;
+
+        watchListButtonChange();
 
         @*StockDetails = await Http.GetFromJsonAsync<List<ChartData>>("api/Polygon/GetChartData");*@
 
@@ -246,19 +284,26 @@ else
     public class ChartData
     {
         public DateTime date { get; set; }
-        public double open { get; set; }
-        public double low { get; set; }
-        public double close { get; set; }
-        public double high { get; set; }
-        public double volume { get; set; }
+        public double? open { get; set; }
+        public double? low { get; set; }
+        public double? close { get; set; }
+        public double? high { get; set; }
+        public double? volume { get; set; }
     }
 
     string loadClass = "stockchartloader";
     string loadDiv = "stockchartdiv";
+
     void ChartLoaded(StockChartEventArgs args)
     {
         loadClass = "";
         loadDiv = "";
+        StateHasChanged();
+    }
+
+    void watchListButtonChange()
+    {
+        watchListButtonContent = isOnWatchList ? "Remove from watchlist" : "Add to watchlist";
         StateHasChanged();
     }
 

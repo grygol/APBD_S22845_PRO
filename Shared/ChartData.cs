@@ -3,12 +3,13 @@ namespace APBD_PRO.Shared
 {
     public class ChartData
     {
-        public DateTime Date { get; set; }
-        public Double Open { get; set; }
-        public Double Low { get; set; }
-        public Double Close { get; set; }
-        public Double High { get; set; }
-        public Double Volume { get; set; }
+        //public string ticker { get; set; }
+        public DateTime? date { get; set; }
+        public Double? open { get; set; }
+        public Double? low { get; set; }
+        public Double? close { get; set; }
+        public Double? high { get; set; }
+        public Double? volume { get; set; }
 
     }
 }

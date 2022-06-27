@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace APBD_PRO.Shared
+namespace APBD_PRO.Server.Models
 {
-	public class FullTicker
+	public class FullTickerDb
 	{
+        [Key]
         public string ticker { get; set; }
         public string name { get; set; }
         public string locale { get; set; }
@@ -14,20 +16,16 @@ namespace APBD_PRO.Shared
         public string phone_number { get; set; }
         public string list_date { get; set; }
 
-        public string? icon_url { get; set; }
-        public string? logo_url { get; set; }
-        public string? address1 { get; set; }
-        public string? city { get; set; }
-        public string? postal_code { get; set; }
-        public string? state { get; set; }
+        public string icon_url { get; set; }
+        public string logo_url { get; set; }
+        public string address1 { get; set; }
+        public string city { get; set; }
+        public string postal_code { get; set; }
+        public string state { get; set; }
 
-        public Dictionary<string, string> branding { get; set; }
-        public Dictionary<string, string> address { get; set; }
-
-        public virtual IEnumerable<ChartData> chartDatas { get; set; }
-
-        public virtual IEnumerable<TickerInNews> tickerInNews { get; set; }
-        public virtual IEnumerable<IWatchlist> Watchlists { get; set; }
+        public virtual IEnumerable<ChartDataDb> chartDatas { get; set; }
+        public virtual IEnumerable<TickerInNewsDb> tickerInNews { get; set; }
+        public virtual IEnumerable<WatchlistDb> Watchlists { get; set; }
 
 
     }

@@ -10,9 +10,6 @@ namespace APBD_PRO.Shared
         public int resultsCount { get; set; }
         public string status { get; set; }
         public List<Dictionary<String, double>> results;
-
-
-
     }
 }
 

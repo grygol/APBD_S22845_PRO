@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace APBD_PRO.Server.Migrations
 {
-    public partial class InitialMSSQL : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -68,6 +68,31 @@ namespace APBD_PRO.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FullTicker",
+                columns: table => new
+                {
+                    ticker = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    locale = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    primary_exchange = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    homepage_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    total_employees = table.Column<int>(type: "int", nullable: false),
+                    phone_number = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    list_date = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    icon_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    logo_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    address1 = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    city = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    postal_code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    state = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FullTicker", x => x.ticker);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Keys",
                 columns: table => new
                 {
@@ -103,6 +128,22 @@ namespace APBD_PRO.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TickerNews",
+                columns: table => new
+                {
+                    news_id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    author = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    article_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    image_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TickerNews", x => x.news_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,6 +252,79 @@ namespace APBD_PRO.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ChartData",
+                columns: table => new
+                {
+                    chart_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ticker = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    open = table.Column<double>(type: "float(2)", maxLength: 10, precision: 2, nullable: false),
+                    low = table.Column<double>(type: "float(2)", maxLength: 10, precision: 2, nullable: false),
+                    close = table.Column<double>(type: "float(2)", maxLength: 10, precision: 2, nullable: false),
+                    high = table.Column<double>(type: "float(2)", maxLength: 10, precision: 2, nullable: false),
+                    volume = table.Column<double>(type: "float(2)", maxLength: 10, precision: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChartData", x => x.chart_id);
+                    table.ForeignKey(
+                        name: "FK_ChartData_FullTicker_ticker",
+                        column: x => x.ticker,
+                        principalTable: "FullTicker",
+                        principalColumn: "ticker",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Watchlist",
+                columns: table => new
+                {
+                    user_id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ticker = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Watchlist", x => new { x.user_id, x.ticker });
+                    table.ForeignKey(
+                        name: "FK_Watchlist_AspNetUsers_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Watchlist_FullTicker_ticker",
+                        column: x => x.ticker,
+                        principalTable: "FullTicker",
+                        principalColumn: "ticker",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TickerInNews",
+                columns: table => new
+                {
+                    news_Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ticker = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TickerInNews", x => new { x.news_Id, x.ticker });
+                    table.ForeignKey(
+                        name: "FK_TickerInNews_FullTicker_ticker",
+                        column: x => x.ticker,
+                        principalTable: "FullTicker",
+                        principalColumn: "ticker",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TickerInNews_TickerNews_news_Id",
+                        column: x => x.news_Id,
+                        principalTable: "TickerNews",
+                        principalColumn: "news_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -251,6 +365,11 @@ namespace APBD_PRO.Server.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChartData_ticker",
+                table: "ChartData",
+                column: "ticker");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
                 table: "DeviceCodes",
                 column: "DeviceCode",
@@ -285,6 +404,16 @@ namespace APBD_PRO.Server.Migrations
                 name: "IX_PersistedGrants_SubjectId_SessionId_Type",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "SessionId", "Type" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TickerInNews_ticker",
+                table: "TickerInNews",
+                column: "ticker");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Watchlist_ticker",
+                table: "Watchlist",
+                column: "ticker");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -305,6 +434,9 @@ namespace APBD_PRO.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ChartData");
+
+            migrationBuilder.DropTable(
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
@@ -314,10 +446,22 @@ namespace APBD_PRO.Server.Migrations
                 name: "PersistedGrants");
 
             migrationBuilder.DropTable(
+                name: "TickerInNews");
+
+            migrationBuilder.DropTable(
+                name: "Watchlist");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "TickerNews");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "FullTicker");
         }
     }
 }

@@ -46,26 +46,6 @@ namespace APBD_PRO.Server.Services
                 using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
                 var res = await System.Text.Json.JsonSerializer.DeserializeAsync<Tickers>(contentStream);
                 return res.results;
-                //return res.results;
-
-
-                //    IEnumerable<BasicTicker> result = new List<BasicTicker>();
-
-                //    var serializer = new Newtonsoft.Json.JsonSerializer();
-
-                //    using (var contentStream = await httpResponse.Content.ReadAsStreamAsync())
-                //    using (var reader = new StreamReader(contentStream))
-                //    using (var jsonReader = new JsonTextReader(reader))
-                //    {
-                //        jsonReader.SupportMultipleContent = true;
-
-                //        while (jsonReader.Read())
-                //        {
-                //            result.Append(serializer.Deserialize<BasicTicker>(jsonReader));
-                //        }
-
-                //        return result;
-                //    }
             }
             return null;
         }
@@ -101,12 +81,12 @@ namespace APBD_PRO.Server.Services
 
                 return o.Select(e => new ChartData
                 {
-                    Volume = e["v"].ToObject<Double>(),
-                    Open = e["o"].ToObject<Double>(),
-                    Close = e["c"].ToObject<Double>(),
-                    High = e["h"].ToObject<Double>(),
-                    Low = e["l"].ToObject<Double>(),
-                    Date = (new DateTime(1970, 1, 1)).AddMilliseconds(e["t"].ToObject<double>())
+                    volume = e.Value<Double?>("v") ?? null,
+                    open = e.Value<Double?>("o") ?? null,
+                    close = e.Value<Double?>("c") ?? null,
+                    high = e.Value<Double?>("h") ?? null,
+                    low = e.Value<Double?>("l") ?? null,
+                    date = (new DateTime(1970, 1, 1)).AddMilliseconds(e.Value<long?>("t") ?? 1)
                 }).ToList();
             }
 
@@ -125,15 +105,26 @@ namespace APBD_PRO.Server.Services
 
                 var o = JObject.Parse(jsonText).SelectToken("results");
 
-                //Console.WriteLine("O: " + o.ToString());
-                return o.Select(e => new TickerNews
+                Console.WriteLine("O: " + o.ToString());
+                if (o is null) return null;
+
+                try
                 {
-                    title = e["title"].ToObject<String>(),
-                    author = e["author"].ToObject<String>(),
-                    article_url = e["article_url"].ToObject<String>(),
-                    image_url = e["image_url"].ToObject<String>(),
-                    description = e["description"].ToObject<String>()
-                }).ToList();
+                    return o.Select(e => new TickerNews
+                    {
+                        id = e.Value<String>("id") ?? "",
+                        title = e.Value<String>("title") ?? "",
+                        author = e.Value<String>("author") ?? "",
+                        article_url = e.Value<String>("article_url") ?? "",
+                        image_url = e.Value<String>("image_url") ?? "",
+                        description = e.Value<String>("description") ?? ""
+                    }).ToList();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Exception! (" + o.Count() + ")");
+                    
+                }
                 
             }
 

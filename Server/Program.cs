@@ -13,7 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var polygonAccessToken = builder.Configuration.GetValue<string>("AccessTokens:Polygon.io");
 
+builder.Services.AddScoped<IWatchlistService, WatchlistService>();
+builder.Services.AddScoped<IChartDataService, ChartDataService>();
+builder.Services.AddScoped<ITickerNewsService, TickerNewsService>();
 builder.Services.AddScoped<IPolygonService, PolygonService>();
+builder.Services.AddScoped<ITickerService, TickerService>();
+
+//builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
