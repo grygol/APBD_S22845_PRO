@@ -1,7 +1,9 @@
 ﻿@page "/dashboard"
 
 @using Syncfusion.Blazor.DropDowns
+@using Microsoft.AspNetCore.Authorization
 @using APBD_PRO.Shared
+@attribute [Authorize]
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @*<SfAutoComplete TValue="string" TItem="GameFields" Placeholder="e.g. Basketball" DataSource="@Games">
@@ -16,7 +18,7 @@
     <AutoCompleteEvents TItem="BasicTicker" TValue="string" OnValueSelect="@OnValueSelectHandler"></AutoCompleteEvents>
 </SfAutoComplete>
 
-<br/>
+<br />
 
 @if (basicTickers == null)
 {
@@ -39,7 +41,7 @@ else
                 {
                     <DashboardLayoutPanel Column="0" SizeX="1" SizeY="1" MaxSizeY="1">
                         <ContentTemplate>
-                        <div class="text-left"><h1> <a href="/TickerView/@b.ticker" class="tickerlink">@b.ticker</a></h1> <h6>@b.name</h6></div>
+                            <div class="text-left"><h1> <a href="/TickerView/@b.ticker" class="tickerlink">@b.ticker</a></h1> <h6>@b.name</h6></div>
                         </ContentTemplate>
                     </DashboardLayoutPanel>
                 }
@@ -54,9 +56,8 @@ else
 }
 
 <style>
-    a.tickerlink{
+    a.tickerlink {
         color: black;
-
     }
 
     .e-panel-content {

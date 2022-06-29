@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace APBD_PRO.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class WatchlistsController : Controller
     {
